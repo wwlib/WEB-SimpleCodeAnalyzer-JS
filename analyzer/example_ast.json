@@ -1,0 +1,90 @@
+{
+  "type": "Program",
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "id": {
+            "type": "Identifier",
+            "name": "x"
+          },
+          "init": {
+            "type": "Literal",
+            "value": 0,
+            "raw": "0"
+          }
+        }
+      ],
+      "kind": "var"
+    },
+    {
+      "type": "ForStatement",
+      "init": {
+        "type": "VariableDeclaration",
+        "declarations": [
+          {
+            "type": "VariableDeclarator",
+            "id": {
+              "type": "Identifier",
+              "name": "i"
+            },
+            "init": {
+              "type": "Literal",
+              "value": 0,
+              "raw": "0"
+            }
+          }
+        ],
+        "kind": "var"
+      },
+      "test": {
+        "type": "BinaryExpression",
+        "operator": "<",
+        "left": {
+          "type": "Identifier",
+          "name": "i"
+        },
+        "right": {
+          "type": "Literal",
+          "value": 99,
+          "raw": "99"
+        }
+      },
+      "update": {
+        "type": "AssignmentExpression",
+        "operator": "+=",
+        "left": {
+          "type": "Identifier",
+          "name": "i"
+        },
+        "right": {
+          "type": "Literal",
+          "value": 1,
+          "raw": "1"
+        }
+      },
+      "body": {
+        "type": "BlockStatement",
+        "body": [
+          {
+            "type": "ExpressionStatement",
+            "expression": {
+              "type": "AssignmentExpression",
+              "operator": "+=",
+              "left": {
+                "type": "Identifier",
+                "name": "x"
+              },
+              "right": {
+                "type": "Identifier",
+                "name": "i"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
