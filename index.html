@@ -17,7 +17,7 @@
     <div class="page-label">Simple Code Analyzer</div>
     <div class="summary">
         <p><strong>Simple Code Analyzer</strong> is a (very) simple tool that checks for the presence of required code elements and structure.</p>
-        <p>The tool's organization and layout is based on <a href="http://khan.github.io/structuredjs/">structured.js</a> by Sophia Westwood</p>
+        <p>The tool's organization and layout is based on <a href="http://khan.github.io/structuredjs/">structured.js</a> by Sophia Westwood.</p>
         <p>Required elements are specified using JSON.  For example, the following array indicates that a variable declaration within a For statement is required.</p>
         <pre>
 {
@@ -34,11 +34,11 @@
             <li>The requirements JSON is parsed, generating a list of patterns that must be matched.</li>
             <li>Then the user's code is parsed by Esprima to generate an Abstract Syntax Tree (AST).</li>
             <li>The AST is traversed to generate a "path" to each leaf node of the AST tree.</li>
-            <ul><li>i.e. the path to a top level For Statement is: /Program/ForStatement</li></ul>
+            <ul><li>i.e. The path to a top level For Statement is: /Program/ForStatement</li></ul>
             <li>Each path is checked against the list of required patterns.</li>
             <li>If a required pattern matches a path (or is contained in a path) that reuirement is satisfied.</li>
-            <ul><li>Note: A path may satisfy more that one requirement</li></ul>
-            <li>Finally, the UI is updated to reflect the status of satisfied requirements</li>
+            <ul><li>Note: A path may satisfy more that one requirement.</li></ul>
+            <li>Finally, the UI is updated to reflect the status of satisfied requirements.</li>
         </ul>
 
       <p>Try it out!</p>
