@@ -94,11 +94,15 @@ $(document).ready(function() {
         var textList = "<p>In your code you should:</p><ul>";
         var listLength = elements.length;
         
+        match = true;
+        
         for (var i=0; i < listLength; i++) {
-            if (elements[i].OK) {
+            var element = elements[i];
+            if ((element.OK && !element.exclude) || (!element.OK && element.exclude)) {
                 textList += "<li>[x] ";
             } else {
                 textList += "<li>[  ] ";
+                match = false;
             }
             textList += elements[i].description + "</li>";
         }
@@ -118,20 +122,13 @@ $(document).ready(function() {
     function checkRequiredElements(path) {
         var elements = requiredElements.required;
         var listLength = elements.length;
-        
-        match = true;
-                
+                        
         for (var i=0; i < listLength; i++) {
             var element = elements[i];
+            var found = path.indexOf(element.pattern);
 
-            if (!element.OK) {
-                var found = path.indexOf(element.pattern);
-                
-                if (found >= 0) {
-                    element.OK = true;
-                } else {
-                    match = false;
-                }
+            if (found >= 0) {
+                element.OK = true;
             }
         }
     }
@@ -171,7 +168,7 @@ $(document).ready(function() {
         for (var key in node) {
             if (node.hasOwnProperty(key)) {
                 var child = node[key];
-                if (!match && typeof child === 'object' && child !== null) { // Stop checking if all requirements are satisfied
+                if (typeof child === 'object' && child !== null) {
 
                     if (Array.isArray(child)) {
                         child.forEach(function (node) {
