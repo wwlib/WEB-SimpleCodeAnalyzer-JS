@@ -59,7 +59,7 @@ $(document).ready(function() {
             } else {
                 // If there is a esprima error, clear/update the result messages
                 match = false;
-                updateResultMessages("Match: " + match, "Code Parse Error:<br>" + AstResultString);
+                updateResultMessages("Match: " + match, "Code Parse Error:<br>" + astResult.error);
             }
         } else {
             // If there is a JSON parsing error, clear/update the result messages
