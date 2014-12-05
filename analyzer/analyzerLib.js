@@ -115,15 +115,21 @@
 
     // Initiate the traverse of the AST
     // Display the accumulated list of paths (if available)
-    function analyzeCode(code) {
-        var ast = esprima.parse(code);
-        var result = "";
-        result = traverse(ast, "");
+    function analyzeAST(ast) {
+        var result = {"OK": true, "data": "", "error": ""};
+        
+        try {
+            result.data = traverse(ast, "");
+        } catch (error) {
+            result.OK = false;
+            result.data = undefined;
+            result.error = "" + error;
+        }
 
         return result;
     }
 
-    exports.analyzeCode = analyzeCode;
+    exports.analyzeAST = analyzeAST;
     exports.parseRequiredElements = parseRequiredElements;
     exports.getRequiredElements = getRequiredElements;
     exports.checkCode = checkCode;

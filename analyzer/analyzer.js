@@ -49,14 +49,20 @@ $(document).ready(function() {
                 // Show the esprima AST in editorAST and clear the selection
                 editorAST.setValue(JSON.stringify(astResult.data, null, 2), -1);
                 
-                var analyzeResult = AnalyzerLib.analyzeCode(code);
-                editorElementPaths.setValue(analyzeResult, -1);
+                var analyzeResult = AnalyzerLib.analyzeAST(astResult.data);
+                
+                if (analyzeResult.OK) {
+                    editorElementPaths.setValue(analyzeResult.data, -1);
 
-                // Check to see if required code elements are present
-                updateRequiredElementStatus(AnalyzerLib.getRequiredElements());
-                updateResultMessages("Match: " + match, "");
+                    // Check to see if required code elements are present
+                    updateRequiredElementStatus(AnalyzerLib.getRequiredElements());
+                    updateResultMessages("Match: " + match, "");
+                } else {
+                    match = false;
+                    updateResultMessages("Match: " + match, "AST Parse Error:<br>" + analyzeResult.error);
+                }
             } else {
-                // If there is a esprima error, clear/update the result messages
+                // If there is an esprima error, clear/update the result messages
                 match = false;
                 updateResultMessages("Match: " + match, "Code Parse Error:<br>" + astResult.error);
             }
