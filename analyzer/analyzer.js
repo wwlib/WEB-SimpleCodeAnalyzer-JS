@@ -14,7 +14,6 @@ $(document).ready(function() {
     setupEditor(editorElementPaths);
     var oldFocus = editorRequiredElements;
     
-    var requiredElements = {"required": []}; // A JSON object defining elements that should be included in the code
     var match = false; // A flag that indicates when all required elements are present in the code
 
     // Analyze the user's code when the user presses the button.
@@ -38,23 +37,23 @@ $(document).ready(function() {
         editorElementPaths.setValue("");
         
         // Parse the required elements JSON from the editorRequiredElements editor
-        var requiredElementsResult = getRequiredElements();
+        var requiredElementsResult = AnalyzerLib.parseRequiredElements(editorRequiredElements.getValue());
         
         if (requiredElementsResult.OK) { // Proceed if no errors are reported parsing the JSON
-            requiredElements = requiredElementsResult.data;
             
             // Get the esprima AST for the users code
             var code = editorTest.getValue();
-            var astResult = checkCode(code);
+            var astResult = AnalyzerLib.checkCode(code);
             
             if (astResult.OK) { // Proceed if esprima does not report an error
                 // Show the esprima AST in editorAST and clear the selection
                 editorAST.setValue(JSON.stringify(astResult.data, null, 2), -1);
                 
-                analyzeCode(code);
+                var analyzeResult = AnalyzerLib.analyzeCode(code);
+                editorElementPaths.setValue(analyzeResult, -1);
 
                 // Check to see if required code elements are present
-                updateRequiredElementStatus();
+                updateRequiredElementStatus(AnalyzerLib.getRequiredElements());
                 updateResultMessages("Match: " + match, "");
             } else {
                 // If there is a esprima error, clear/update the result messages
@@ -73,24 +72,8 @@ $(document).ready(function() {
         $(".match-fail-message").html(error_status);
     }
     
-    // Parse the JSON containing the definitions of required code elements
-    function getRequiredElements() {
-        var required = editorRequiredElements.getValue();
-        var result = {"OK": true, "data": {"required": []}, "error": ""};
-        
-        try {
-            result.data = JSON.parse(required);
-        } catch (error) {
-            result.OK = false;
-            result.error = "Required Elements Definition Error:<br>" + error;
-        }
-        
-        return result;
-    }
-    
     // Redraw the list of required code elements with status indicator [x]
-    function updateRequiredElementStatus() {
-        var elements = requiredElements.required;
+    function updateRequiredElementStatus(elements) {
         var textList = "<p>In your code you should:</p><ul>";
         var listLength = elements.length;
         
@@ -111,42 +94,6 @@ $(document).ready(function() {
         $("#required-elements-status").html(textList);
     }
     
-    // Check to see if any rquirements are satisfied by the given element path/description
-    // Each leaf of the AST is considered a testable element
-    // The path to the leaf contains information about its context/structure
-    // For example: A top level For Statement will have the path:
-    //                  /Program/ForStatement
-    //              A variable assignment in the body (block) of a For Statement will have the path:
-    //                  /Program/ForStatement/BlockStatement/ExpressionStatement/AssignmentExpression
-    //  This is a rudimentary way to check for program structure (a starting point, really)
-    function checkRequiredElements(path) {
-        var elements = requiredElements.required;
-        var listLength = elements.length;
-                        
-        for (var i=0; i < listLength; i++) {
-            var element = elements[i];
-            var found = path.indexOf(element.pattern);
-
-            if (found >= 0) {
-                element.OK = true;
-            }
-        }
-    }
-    
-    // Check the user's code by parsing it with Esprima to generate the AST
-    function checkCode(code) {
-        var result = {"OK": true, "data": {}, "error": ""};
-        
-        try {
-            result.data = esprima.parse(code);
-        }
-        catch (error) {
-            result.OK = false;
-            result.error = "" + error;
-        }
-        
-        return result;
-    }
 
     function setupEditor(editor) {
         editor.getSession().setUseWorker(false);
@@ -159,46 +106,6 @@ $(document).ready(function() {
         });
     }
     
-    // Reference: http://sevinf.github.io/blog/2012/09/29/esprima-tutorial/
-    // Traverse the Esprima-generated AST and check each element path against the code requirements
-    // Optional: accumulate a list of all the paths for debugging
-    function traverse(node, path) {
-        var result = "";
-        
-        for (var key in node) {
-            if (node.hasOwnProperty(key)) {
-                var child = node[key];
-                if (typeof child === 'object' && child !== null) {
-
-                    if (Array.isArray(child)) {
-                        child.forEach(function (node) {
-                            result += traverse(node, path);
-                        });
-                    } else {
-                        result += traverse(child, path);
-                    }
-                } else { // When a leaf is reached, see if any code requirements have been satisfied
-                    if (key == "type") {
-                        path += "/" + child;
-                        result += path + "\n"; // Optional: To avoid accumulating paths (save memory), set result to ""
-                        checkRequiredElements(path);
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-    
-    // Initiate the traverse of the AST
-    // Display the accumulated list of paths (if available)
-    function analyzeCode(code) {
-        var ast = esprima.parse(code);
-        var result = "";
-        result = traverse(ast, "");
-        
-       editorElementPaths.setValue(result, -1);
-    }
     
     // Output results on the initial load.
     $("#run-button").click();
